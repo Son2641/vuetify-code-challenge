@@ -79,120 +79,131 @@ const formatDate = (date: Date | undefined) => {
 </script>
 
 <template>
-  <v-container>
-    <v-row align="center" class="pa-3">
-      <h2>Speak up your mind</h2>
-      <div class="pa-4 text-center">
-        <v-dialog v-model="isFormOpen" max-width="600" persistent class="pa-2">
-          <template v-slot:activator="{ props: activatorProps }">
-            <v-btn
-              class="text-none font-weight-regular"
-              prepend-icon="mdi-post"
-              text="Create a post"
-              variant="elevated"
-              v-bind="activatorProps"
-            ></v-btn>
-          </template>
-
-          <v-sheet class="pa-6 rounded-lg">
-            <h4 class="mb-3">
-              {{ isEditing ? "Edit this blog post" : "Create a new blog post" }}
-            </h4>
-            <v-form ref="blogForm" @submit.prevent fast-fail>
-              <v-text-field
-                v-model="blogTitle"
-                label="Blog Title"
-                :placeholder="formPlaceholders.blogTitle"
-                variant="outlined"
-              ></v-text-field>
-              <v-textarea
-                v-model="blogText"
-                :rules
-                label="Write a post"
-                :placeholder="formPlaceholders.blogText"
-                clear-icon="mdi-close-circle"
-                variant="outlined"
-                class="mb-2"
-              ></v-textarea>
-              <v-text-field
-                v-model="blogAuthor"
-                label="Authored by:"
-                :placeholder="formPlaceholders.blogAuthor"
-                variant="outlined"
-              ></v-text-field>
+  <main>
+    <!-- #Main Container -->
+    <v-container>
+      <!-- #Dialog Button and Form -->
+      <v-row align="center" class="pa-3">
+        <h2>Speak up your mind</h2>
+        <div class="pa-4 text-center">
+          <v-dialog
+            v-model="isFormOpen"
+            max-width="600"
+            persistent
+            class="pa-2"
+          >
+            <template v-slot:activator="{ props: activatorProps }">
               <v-btn
-                text="Reset"
-                variant="plain"
-                @click.prevent="store.resetForm"
+                class="text-none font-weight-regular"
+                prepend-icon="mdi-post"
+                text="Create a blog post"
+                variant="elevated"
+                v-bind="activatorProps"
               ></v-btn>
+            </template>
+
+            <v-sheet class="pa-6 rounded-lg">
+              <h4 class="mb-3">
+                {{
+                  isEditing ? "Edit this blog post" : "Create a new blog post"
+                }}
+              </h4>
+              <v-form ref="blogForm" @submit.prevent fast-fail>
+                <v-text-field
+                  v-model="blogTitle"
+                  label="Blog Title"
+                  :placeholder="formPlaceholders.blogTitle"
+                  variant="outlined"
+                ></v-text-field>
+                <v-textarea
+                  v-model="blogText"
+                  :rules
+                  label="Write a post"
+                  :placeholder="formPlaceholders.blogText"
+                  clear-icon="mdi-close-circle"
+                  variant="outlined"
+                  class="mb-2"
+                ></v-textarea>
+                <v-text-field
+                  v-model="blogAuthor"
+                  label="Authored by:"
+                  :placeholder="formPlaceholders.blogAuthor"
+                  variant="outlined"
+                ></v-text-field>
+                <v-btn
+                  text="Reset"
+                  variant="plain"
+                  @click.prevent="store.resetForm"
+                ></v-btn>
+                <v-btn
+                  text="Close"
+                  variant="plain"
+                  @click.prevent="store.closeForm"
+                ></v-btn>
+
+                <v-btn
+                  color="primary"
+                  type="submit"
+                  variant="tonal"
+                  :loading="isLoading"
+                  @click.prevent="
+                    submitBlog(
+                      { title: blogTitle, text: blogText, author: blogAuthor },
+                      blogPosts
+                    )
+                  "
+                  >{{ isEditing ? "Update Post" : "Create Post" }}
+                  <template v-slot:loader>
+                    <v-progress-circular
+                      color="primary"
+                      indeterminate="disable-shrink"
+                      size="15"
+                      width="2"
+                    ></v-progress-circular>
+                  </template>
+                </v-btn>
+              </v-form>
+            </v-sheet>
+          </v-dialog>
+        </div>
+      </v-row>
+
+      <div v-if="!blogPosts.length">No blog posts yet. Be the first one!</div>
+      <div v-else>
+        <div v-for="blog in blogPosts" :key="blog.id" class="mb-6">
+          <v-card class="elevation-2 rounded-lg">
+            <div>
+              <v-card-title v-if="blog.title">{{ blog.title }}</v-card-title>
+              <v-card-text>{{ blog.text }}</v-card-text>
+              <v-card-subtitle
+                >By: {{ blog.author || "Anonymous" }}</v-card-subtitle
+              >
+              <v-card-subtitle>
+                {{
+                  blog.isEdited
+                    ? `Edited at ${formatDate(blog.editDateTime)}`
+                    : `Created at ${formatDate(blog.createdDateTime)}`
+                }}
+              </v-card-subtitle>
+            </div>
+
+            <v-card-actions class="">
               <v-btn
-                text="Close"
-                variant="plain"
-                @click.prevent="store.closeForm"
-              ></v-btn>
-
+                color="error"
+                prepend-icon="mdi-delete"
+                @click.prevent="deleteBlogPost(blog.id, blogPosts)"
+                >Delete</v-btn
+              >
               <v-btn
-                color="primary"
-                type="submit"
-                variant="tonal"
-                :loading="isLoading"
-                @click.prevent="
-                  submitBlog(
-                    { title: blogTitle, text: blogText, author: blogAuthor },
-                    blogPosts
-                  )
-                "
-                >{{ isEditing ? "Update Post" : "Create Post" }}
-                <template v-slot:loader>
-                  <v-progress-circular
-                    color="primary"
-                    indeterminate="disable-shrink"
-                    size="15"
-                    width="2"
-                  ></v-progress-circular>
-                </template>
-              </v-btn>
-            </v-form>
-          </v-sheet>
-        </v-dialog>
+                variant="outlined"
+                prepend-icon="mdi-pencil"
+                @click.prevent="store.openEditForm(blog)"
+                >Edit</v-btn
+              >
+            </v-card-actions>
+          </v-card>
+        </div>
       </div>
-    </v-row>
-
-    <div v-if="!blogPosts.length">No blog posts yet. Be the first one!</div>
-    <div v-else>
-      <div v-for="blog in blogPosts" :key="blog.id" class="mb-6">
-        <v-card class="elevation-2 rounded-lg">
-          <div>
-            <v-card-title v-if="blog.title">{{ blog.title }}</v-card-title>
-            <v-card-text>{{ blog.text }}</v-card-text>
-            <v-card-subtitle
-              >By: {{ blog.author || "Anonymous" }}</v-card-subtitle
-            >
-            <v-card-subtitle>
-              {{
-                blog.isEdited
-                  ? `Edited at ${formatDate(blog.editDateTime)}`
-                  : `Created at ${formatDate(blog.createdDateTime)}`
-              }}
-            </v-card-subtitle>
-          </div>
-
-          <v-card-actions class="">
-            <v-btn
-              color="error"
-              prepend-icon="mdi-delete"
-              @click.prevent="deleteBlogPost(blog.id, blogPosts)"
-              >Delete</v-btn
-            >
-            <v-btn
-              variant="outlined"
-              prepend-icon="mdi-pencil"
-              @click.prevent="store.openEditForm(blog)"
-              >Edit</v-btn
-            >
-          </v-card-actions>
-        </v-card>
-      </div>
-    </div>
-  </v-container>
+    </v-container>
+  </main>
 </template>
