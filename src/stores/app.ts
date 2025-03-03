@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { type BlogPost, type BlogFormField } from "@/types/globals";
+import { type BlogPost } from "@/types/globals";
 import type { VForm } from "vuetify/components";
 
 export const useAppStore = defineStore(
