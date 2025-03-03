@@ -168,7 +168,9 @@ const formatDate = (date: Date | undefined) => {
         </div>
       </v-row>
 
+      <!-- #Empty State -->
       <div v-if="!blogPosts.length">No blog posts yet. Be the first one!</div>
+      <!-- #Blog Posts -->
       <div v-else>
         <div v-for="blog in blogPosts" :key="blog.id" class="mb-6">
           <v-card class="elevation-2 rounded-lg">
