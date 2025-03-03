@@ -165,6 +165,13 @@ const reset = (): void => {
               @click.prevent="store.openEditForm(blog)"
             ></v-btn>
           </v-card-actions>
+          <v-card-subtitle>
+            {{
+              blog.isEdited
+                ? `Edited at ${blog.editDateTime}`
+                : `Created at ${blog.createdDateTime}`
+            }}
+          </v-card-subtitle>
         </v-card>
       </div>
     </div>
