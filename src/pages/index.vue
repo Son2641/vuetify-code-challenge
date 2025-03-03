@@ -160,30 +160,37 @@ const formatDate = (date: Date | undefined) => {
 
     <div v-if="!blogPosts.length">No blog posts yet. Be the first one!</div>
     <div v-else>
-      <div v-for="blog in blogPosts" :key="blog.id" class="mb-8">
+      <div v-for="blog in blogPosts" :key="blog.id" class="mb-6">
         <v-card class="elevation-2 rounded-lg">
-          <v-card-title>{{ blog.title }}</v-card-title>
-          <v-card-text>{{ blog.text }}</v-card-text>
-          <v-card-subtitle>Authored by: {{ blog.author }}</v-card-subtitle>
-          <v-card-actions>
+          <div>
+            <v-card-title v-if="blog.title">{{ blog.title }}</v-card-title>
+            <v-card-text>{{ blog.text }}</v-card-text>
+            <v-card-subtitle
+              >By: {{ blog.author || "Anonymous" }}</v-card-subtitle
+            >
+            <v-card-subtitle>
+              {{
+                blog.isEdited
+                  ? `Edited at ${formatDate(blog.editDateTime)}`
+                  : `Created at ${formatDate(blog.createdDateTime)}`
+              }}
+            </v-card-subtitle>
+          </div>
+
+          <v-card-actions class="">
             <v-btn
-              density="compact"
-              icon="mdi-delete"
+              color="error"
+              prepend-icon="mdi-delete"
               @click.prevent="deleteBlogPost(blog.id, blogPosts)"
-            ></v-btn>
+              >Delete</v-btn
+            >
             <v-btn
-              density="compact"
-              icon="mdi-pencil"
+              variant="outlined"
+              prepend-icon="mdi-pencil"
               @click.prevent="store.openEditForm(blog)"
-            ></v-btn>
+              >Edit</v-btn
+            >
           </v-card-actions>
-          <v-card-subtitle>
-            {{
-              blog.isEdited
-                ? `Edited at ${formatDate(blog.editDateTime)}`
-                : `Created at ${formatDate(blog.createdDateTime)}`
-            }}
-          </v-card-subtitle>
         </v-card>
       </div>
     </div>
