@@ -10,7 +10,7 @@ export const createBlogPost = (
     title,
     text,
     author,
-    date: new Date(),
+    createdDateTime: new Date(),
   };
 
   blogPostArr.push(newPost);
@@ -29,6 +29,8 @@ export const editBlogPost = (
   blogPostArr[postIndex] = {
     ...blogPostArr[postIndex],
     ...updatedFields,
+    isEdited: true, // Set to true when edited
+    editDateTime: new Date(), // Capture the edit timestamp
   };
 
   return blogPostArr[postIndex];

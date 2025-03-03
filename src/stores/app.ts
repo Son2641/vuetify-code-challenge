@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { type BlogPost } from "@/types/globals";
+import { type BlogPost, type BlogFormField } from "@/types/globals";
 
 export const useAppStore = defineStore(
   "app",
@@ -9,10 +9,21 @@ export const useAppStore = defineStore(
     const blogAuthor = ref(undefined);
     const blogPosts = ref<BlogPost[]>([]);
     const isFormOpen = ref<boolean>(false);
+    const isEditing = ref<boolean>(false);
+    const editBlogId = ref(undefined);
 
-    const clearForm = () => {
-      blogAuthor.value = undefined;
-      blogText.value = undefined;
+    const openEditForm = (blog: BlogPost): void => {
+      isEditing.value = true;
+      isFormOpen.value = true; // Reuse the same form dialog
+      blogTitle.value = blog.title;
+      editBlogId.value = blog.id;
+      blogText.value = blog.text;
+      blogAuthor.value = blog.author;
+    };
+
+    const resetEditVariables = (): void => {
+      isEditing.value = false;
+      editBlogId.value = undefined;
     };
 
     return {
@@ -21,7 +32,10 @@ export const useAppStore = defineStore(
       blogAuthor,
       blogPosts,
       isFormOpen,
-      clearForm,
+      openEditForm,
+      isEditing,
+      editBlogId,
+      resetEditVariables,
     };
   },
   {

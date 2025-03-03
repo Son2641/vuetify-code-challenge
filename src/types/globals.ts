@@ -3,7 +3,9 @@ export type BlogPost = {
   title: string;
   text: string;
   author: string;
-  date: Date;
+  createdDateTime: Date;
+  isEdited?: boolean;
+  editDateTime?: Date;
 };
 
-export type BlogFormField = Partial<Omit<BlogPost, "id" | "date">>;
+export type BlogFormField = Partial<Omit<BlogPost, "id" | "createdDateTime">>;

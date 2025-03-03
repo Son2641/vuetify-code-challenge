@@ -11,8 +11,15 @@ const isLoading = ref<boolean>(false);
 
 // Store
 const store = useAppStore();
-const { isFormOpen, blogTitle, blogAuthor, blogText, blogPosts } =
-  storeToRefs(store);
+const {
+  isFormOpen,
+  blogTitle,
+  blogAuthor,
+  blogText,
+  blogPosts,
+  isEditing,
+  editBlogId,
+} = storeToRefs(store);
 
 //Form Placeholders
 const formPlaceholders = {
@@ -44,8 +51,18 @@ const submitBlog = async (
   isLoading.value = true;
 
   // Mock loading state
+
   setTimeout(() => {
-    createBlogPost({ title, text, author }, blogPostArr);
+    if (isEditing.value && editBlogId.value) {
+      // Editing existing post
+      editBlogPost(editBlogId.value, { title, text, author }, blogPostArr);
+    } else {
+      // Creating new post
+      createBlogPost({ title, text, author }, blogPostArr);
+    }
+
+    // Reset editing state
+    store.resetEditVariables();
 
     // Reset and close the dialog AFTER loading state is shown
     reset();
@@ -115,7 +132,7 @@ const reset = (): void => {
                   blogPosts
                 )
               "
-              >Create Post
+              >{{ isEditing ? "Update Post" : "Create Post" }}
               <template v-slot:loader>
                 <v-progress-circular
                   color="primary"
@@ -142,7 +159,11 @@ const reset = (): void => {
               icon="mdi-delete"
               @click.prevent="deleteBlogPost(blog.id, blogPosts)"
             ></v-btn>
-            <v-btn density="compact" icon="mdi-pencil"></v-btn>
+            <v-btn
+              density="compact"
+              icon="mdi-pencil"
+              @click.prevent="store.openEditForm(blog)"
+            ></v-btn>
           </v-card-actions>
         </v-card>
       </div>
