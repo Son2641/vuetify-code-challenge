@@ -13,7 +13,7 @@ export const createBlogPost = (
     createdDateTime: new Date(),
   };
 
-  blogPostArr.push(newPost);
+  blogPostArr.unshift(newPost);
   return newPost;
 };
 
@@ -26,14 +26,21 @@ export const editBlogPost = (
   const postIndex = blogPostArr.findIndex((post) => post.id === id);
   if (postIndex === -1) return null;
 
-  blogPostArr[postIndex] = {
-    ...blogPostArr[postIndex],
+  // Remove the existing post
+  const [updatedPost] = blogPostArr.splice(postIndex, 1);
+
+  // Update fields and set edit metadata
+  const newPost = {
+    ...updatedPost,
     ...updatedFields,
-    isEdited: true, // Set to true when edited
-    editDateTime: new Date(), // Capture the edit timestamp
+    isEdited: true,
+    editDateTime: new Date(),
   };
 
-  return blogPostArr[postIndex];
+  // Insert the updated post at the beginning of the array
+  blogPostArr.unshift(newPost);
+
+  return newPost;
 };
 
 // Function to delete a blog post
