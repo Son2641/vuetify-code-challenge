@@ -86,10 +86,10 @@ const formatDate = (date: Date | undefined) => {
         <v-dialog v-model="isFormOpen" max-width="600" persistent class="pa-2">
           <template v-slot:activator="{ props: activatorProps }">
             <v-btn
-              class="text-none font-weight-regular elavation-15"
+              class="text-none font-weight-regular"
               prepend-icon="mdi-post"
               text="Create a post"
-              variant="tonal"
+              variant="elevated"
               v-bind="activatorProps"
             ></v-btn>
           </template>
@@ -161,7 +161,7 @@ const formatDate = (date: Date | undefined) => {
     <div v-if="!blogPosts.length">No blog posts yet. Be the first one!</div>
     <div v-else>
       <div v-for="blog in blogPosts" :key="blog.id" class="mb-8">
-        <v-card class="elevation-15 rounded-lg">
+        <v-card class="elevation-2 rounded-lg">
           <v-card-title>{{ blog.title }}</v-card-title>
           <v-card-text>{{ blog.text }}</v-card-text>
           <v-card-subtitle>Authored by: {{ blog.author }}</v-card-subtitle>

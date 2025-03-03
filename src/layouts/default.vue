@@ -1,5 +1,5 @@
 <template>
-  <v-main class="bg-grey-lighten-2 pa-2">
+  <v-main class="pa-2">
     <router-view />
   </v-main>
 
