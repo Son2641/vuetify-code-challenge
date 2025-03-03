@@ -3,11 +3,16 @@ import { useAppStore } from "@/stores/app";
 import { storeToRefs } from "pinia";
 import { createBlogPost, editBlogPost, deleteBlogPost } from "@/utils";
 import { type BlogPost, type BlogFormField } from "@/types/globals";
-import type { VForm } from "vuetify/components";
+
+import { useDate } from "vuetify";
 
 // Refs
-const blogForm = ref<VForm | null>(null);
+
 const isLoading = ref<boolean>(false);
+// Date formatting
+const formatDate = (date: Date | undefined) => {
+  return useDate().format(date, "keyboardDateTime24h");
+};
 
 // Store
 const store = useAppStore();
@@ -19,6 +24,7 @@ const {
   blogPosts,
   isEditing,
   editBlogId,
+  blogForm,
 } = storeToRefs(store);
 
 //Form Placeholders
@@ -37,7 +43,6 @@ const rules = [
 ];
 
 // Methods
-
 const submitBlog = async (
   { title, text, author }: BlogFormField,
   blogPostArr: BlogPost[]
@@ -51,7 +56,6 @@ const submitBlog = async (
   isLoading.value = true;
 
   // Mock loading state
-
   setTimeout(() => {
     if (isEditing.value && editBlogId.value) {
       // Editing existing post
@@ -65,14 +69,10 @@ const submitBlog = async (
     store.resetEditVariables();
 
     // Reset and close the dialog AFTER loading state is shown
-    reset();
+    store.resetForm();
     isLoading.value = false;
     isFormOpen.value = false;
   }, 2000);
-};
-
-const reset = (): void => {
-  blogForm.value?.reset();
 };
 </script>
 
@@ -114,11 +114,15 @@ const reset = (): void => {
               :placeholder="formPlaceholders.blogAuthor"
               variant="outlined"
             ></v-text-field>
-            <v-btn text="Reset" variant="plain" @click="reset"></v-btn>
+            <v-btn
+              text="Reset"
+              variant="plain"
+              @click.prevent="store.resetForm"
+            ></v-btn>
             <v-btn
               text="Close"
               variant="plain"
-              @click="isFormOpen = false"
+              @click.prevent="store.closeForm"
             ></v-btn>
 
             <v-btn
@@ -126,7 +130,7 @@ const reset = (): void => {
               type="submit"
               variant="tonal"
               :loading="isLoading"
-              @click="
+              @click.prevent="
                 submitBlog(
                   { title: blogTitle, text: blogText, author: blogAuthor },
                   blogPosts
@@ -168,8 +172,8 @@ const reset = (): void => {
           <v-card-subtitle>
             {{
               blog.isEdited
-                ? `Edited at ${blog.editDateTime}`
-                : `Created at ${blog.createdDateTime}`
+                ? `Edited at ${formatDate(blog.editDateTime)}`
+                : `Created at ${formatDate(blog.createdDateTime)}`
             }}
           </v-card-subtitle>
         </v-card>

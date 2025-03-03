@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { type BlogPost, type BlogFormField } from "@/types/globals";
+import type { VForm } from "vuetify/components";
 
 export const useAppStore = defineStore(
   "app",
@@ -11,6 +12,7 @@ export const useAppStore = defineStore(
     const isFormOpen = ref<boolean>(false);
     const isEditing = ref<boolean>(false);
     const editBlogId = ref(undefined);
+    const blogForm = ref<VForm | null>(null);
 
     const openEditForm = (blog: BlogPost): void => {
       isEditing.value = true;
@@ -26,6 +28,19 @@ export const useAppStore = defineStore(
       editBlogId.value = undefined;
     };
 
+    const closeForm = (): void => {
+      if (isEditing) {
+        resetEditVariables();
+        resetForm();
+      }
+
+      isFormOpen.value = false;
+    };
+
+    const resetForm = (): void => {
+      blogForm.value?.reset();
+    };
+
     return {
       blogTitle,
       blogText,
@@ -36,6 +51,9 @@ export const useAppStore = defineStore(
       isEditing,
       editBlogId,
       resetEditVariables,
+      closeForm,
+      blogForm,
+      resetForm,
     };
   },
   {
