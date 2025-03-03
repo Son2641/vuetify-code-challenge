@@ -5,6 +5,7 @@ import type { VForm } from "vuetify/components";
 export const useAppStore = defineStore(
   "app",
   () => {
+    // Refs
     const blogTitle = ref(undefined);
     const blogText = ref(undefined);
     const blogAuthor = ref(undefined);
@@ -14,6 +15,7 @@ export const useAppStore = defineStore(
     const editBlogId = ref(undefined);
     const blogForm = ref<VForm | null>(null);
 
+    // Methods
     const openEditForm = (blog: BlogPost): void => {
       isEditing.value = true;
       isFormOpen.value = true; // Reuse the same form dialog
